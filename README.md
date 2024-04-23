@@ -11,3 +11,8 @@
 
 - **Email**: lm1014367@csu.fullerton.edu
 - **CWID**: 887623411
+
+### [Jared Pope](https://github.com/jpope6)
+
+- **Email**: imthepope@csu.fullerton.edu
+- **CWID**: 890470990

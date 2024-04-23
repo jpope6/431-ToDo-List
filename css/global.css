@@ -1,6 +1,8 @@
 :root {
   --primary-background-color: #202225;
   --secondary-background-color: #2f3136;
+  --accent-color: #3A4E48;
+  --primary-text-color: white;
   --font-primary: "Roboto", sans-serif;
   --font-secondary: "Nunito", sans-serif;
 }
