@@ -1,51 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ToDo</title>
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/global.css" rel="stylesheet">
-  </head>
-  <body>
-    <header>
-      <button class="menu-button">
-        <img src="./images/menu-icon.png" alt="open">
-      </button>
-      <h1>Todo List</h1>
-    </header>
 
-    <div class="main-content">
-      <div class="sidebar">
-        <button class="sidebar-button">Add List</button>
-        <div class="sidebar-lists"></div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ToDo</title>
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/global.css" rel="stylesheet">
+</head>
+
+<body>
+  <header>
+    <button class="menu-button">
+      <img src="./images/menu-icon.png" alt="open">
+    </button>
+    <h1>Todo List</h1>
+  </header>
+
+  <div class="main-content">
+    <div class="sidebar">
+      <button class="sidebar-button">Add List</button>
+      <div class="sidebar-lists"></div>
+    </div>
+
+    <div class="to-do-list">
+      <div class="date">
+        <p></p>
+        <hr>
       </div>
 
-      <div class="to-do-list">
-        <div class="date">
-          <p></p>
-          <hr>
-        </div>
-
-        <ul class="list">
-          <li>
-            <input type="checkbox" id="item1" name="item1">
-            <label for="item1">Task 1</label>
-          </li>
-          <li>
-            <input type="checkbox" id="item2" name="item2">
-            <label for="item2">Task 2</label>
-          </li>
-          <li>
-            <input type="checkbox" id="item3" name="item3">
-            <label for="item3">Task 3</label>
-          </li>
-        </ul>
-
+      <div class="task-entry">
+        <form id="new-task-form">
+          <input type="text" id="new-task-input" placeholder="Add a new task" required>
+          <button type="submit">Add Task</button>
+        </form>
       </div>
+      <ul class="list">
+        <li>
+          <input type="checkbox" id="item1" name="item1">
+          <label for="item1">Task 1</label>
+        </li>
+        <li>
+          <input type="checkbox" id="item2" name="item2">
+          <label for="item2">Task 2</label>
+        </li>
+        <li>
+          <input type="checkbox" id="item3" name="item3">
+          <label for="item3">Task 3</label>
+        </li>
+      </ul>
 
     </div>
-  
-    <script src="js/script.js"></script>
-  </body>
+
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+
 </html>

@@ -43,6 +43,34 @@ lists.forEach(function(listItem) {
   sidebarLists.appendChild(li);
 });
 
+document.getElementById('new-task-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+  const taskInput = document.getElementById('new-task-input');
+  const taskText = taskInput.value.trim();
+  if (taskText) {
+      addTaskToList(taskText);
+      taskInput.value = ''; // Clear input after adding
+  }
+});
+
+function addTaskToList(text) {
+  const list = document.querySelector('.list');
+  const li = document.createElement('li');
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.id = text.toLowerCase().replace(/ /g, '-');
+  input.name = text.toLowerCase().replace(/ /g, '-');
+
+  const label = document.createElement('label');
+  label.htmlFor = input.id;
+  label.textContent = text;
+
+  li.appendChild(input);
+  li.appendChild(label);
+  list.appendChild(li);
+}
+
+
 // Get the current date and put it in the .date div
 let currentDate = new Date();
 let day = currentDate.getDate();

@@ -66,61 +66,60 @@ header>h1 {
 
 .sidebar-button {
   width: 10rem;
-	padding: 10px 40px;
-	border-radius: 10px;
-	outline: none;
-	border: none;
-	font-weight: 500;
-	background-color: var(--accent-color);
-	color: white;
-	font-size: 20px;
-	cursor: pointer;
-	transition: all 0.1s ease-in-out;
-	user-select: none;
+  padding: 10px 40px;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  font-weight: 500;
+  background-color: var(--accent-color);
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  user-select: none;
 }
 
-.sidebar-button:hover, .sidebar-icon:hover {
-	transform: scale(1.05);
-	filter: brightness(1.08);
+.sidebar-button:hover,
+.sidebar-icon:hover {
+  transform: scale(1.05);
+  filter: brightness(1.08);
 }
 
 .sidebar-lists {
-	flex-grow: 1;
+  flex-grow: 1;
   width: 100%;
-	margin: 0;
-	padding: 0;
-	margin-top: 20px;
-	display: flex;
-	flex-direction: column;
+  margin: 0;
+  padding: 0;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-list-item {
-	width: 100%;
-	padding: 10px 2rem;
-	color: white;
-	font-weight: 500;
-	font-size: 22px;
-	cursor: pointer;
-	transition: all 0.1s ease-in-out;
-	list-style: none;
-	white-space: nowrap;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	user-select: none;
+  width: 100%;
+  padding: 10px 2rem;
+  color: white;
+  font-weight: 500;
+  font-size: 22px;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  list-style: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
 }
 
 .sidebar-list-item:hover {
-	filter: brightness(1.2);
+  filter: brightness(1.2);
 }
 
 .active-sidebar-item {
-	color: white !important;
-	background: rgb(210, 0, 2);
-	background: linear-gradient(
-		90deg,
-		var(--accent-color) -50%,
-		var(--primary-background-color) 100%
-	);
+  color: white !important;
+  background: rgb(210, 0, 2);
+  background: linear-gradient(90deg,
+      var(--accent-color) -50%,
+      var(--primary-background-color) 100%);
 }
 
 .to-do-list {
@@ -146,8 +145,8 @@ header>h1 {
 
 .to-do-left hr {
   border: none;
-  height: 2px; 
-  background-color: white; 
+  height: 2px;
+  background-color: white;
   margin: 20px 0;
 }
 
@@ -160,4 +159,39 @@ header>h1 {
 .list li {
   color: white;
   font-size: 1rem;
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.to-do-list .task-entry {
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+#new-task-form {
+  display: flex;
+  flex-grow: 1;
+  justify-content: flex-end;
+}
+
+#new-task-form input {
+  padding: 0.5rem;
+  margin-right: 0.5rem;
+  flex-grow: 1;
+}
+
+#new-task-form button {
+  padding: 0.5rem 1rem;
+  background-color: var(--accent-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+#new-task-form button:hover {
+  background-color: darken(var(--accent-color), 10%);
 }
