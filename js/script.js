@@ -85,6 +85,51 @@ document.addEventListener('click', function(event) {
 });
 
 
+document.querySelectorAll('.sort-button').forEach(button => {
+  button.addEventListener('click', function() {
+      // Determine current sorting direction
+      const currentSort = this.getAttribute('data-sort');
+      
+      // Toggle sort direction and update button text and attribute
+      if (currentSort.includes('asc')) {
+          this.setAttribute('data-sort', currentSort.replace('asc', 'desc'));
+          this.innerHTML = this.id === 'sort-name' ? 'ABCD &#8595;' : 'DATE &#8595;';
+      } else {
+          this.setAttribute('data-sort', currentSort.replace('desc', 'asc'));
+          this.innerHTML = this.id === 'sort-name' ? 'ABCD &#8593;' : 'DATE &#8593;';
+      }
+
+      // Update sorting of the list
+      sortTasks(this.id, this.getAttribute('data-sort'));
+  });
+});
+
+function sortTasks(sortBy, direction) {
+  const list = document.querySelector('.list');
+  const items = Array.from(list.querySelectorAll('li'));
+
+  // Sorting logic
+  items.sort((a, b) => {
+      let valA, valB;
+      if (sortBy === 'sort-name') {
+          valA = a.querySelector('label').textContent.toLowerCase();
+          valB = b.querySelector('label').textContent.toLowerCase();
+      } else {
+          valA = new Date(a.dataset.date);
+          valB = new Date(b.dataset.date);
+      }
+
+      if (direction === 'name-asc' || direction === 'date-asc') {
+          return valA > valB ? 1 : -1;
+      } else {
+          return valA < valB ? 1 : -1;
+      }
+  });
+
+  // Re-append items to list in sorted order
+  items.forEach(item => list.appendChild(item));
+}
+
 
 // Get the current date and put it in the .date div
 let currentDate = new Date();
