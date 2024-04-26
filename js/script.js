@@ -65,10 +65,25 @@ function addTaskToList(text) {
   label.htmlFor = input.id;
   label.textContent = text;
 
+  const deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.className = 'delete-task-btn';
+
   li.appendChild(input);
   li.appendChild(label);
+  li.appendChild(deleteButton);
   list.appendChild(li);
 }
+
+// Event listener for delete buttons to handle task removal
+document.addEventListener('click', function(event) {
+  if (event.target.classList.contains('delete-task-btn')) {
+    const li = event.target.parentElement;
+    li.parentNode.removeChild(li);
+    // TODO Later; Handle deletion in the backend
+  }
+});
+
 
 
 // Get the current date and put it in the .date div
