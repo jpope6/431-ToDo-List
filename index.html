@@ -1,51 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ToDo</title>
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/global.css" rel="stylesheet">
-  </head>
-  <body>
-    <header>
-      <button class="menu-button">
-        <img src="./images/menu-icon.png" alt="open">
-      </button>
-      <h1>Todo List</h1>
-    </header>
 
-    <div class="main-content">
-      <div class="sidebar">
-        <button class="sidebar-button">Add List</button>
-        <div class="sidebar-lists"></div>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ToDo</title>
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/global.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+  <header>
+    <button class="menu-button">
+      <img src="./images/menu-icon.png" alt="open">
+    </button>
+    <h1>Todo List</h1>
+  </header>
+
+  <div class="main-content">
+    <div class="sidebar">
+      <button class="sidebar-button">Add List</button>
+      <div class="sidebar-lists"></div>
+    </div>
+
+    <div class="to-do-list">
+      <div class="date">
+        <p></p>
+        <hr>
       </div>
 
-      <div class="to-do-list">
-        <div class="date">
-          <p></p>
-          <hr>
-        </div>
-
-        <ul class="list">
-          <li>
-            <input type="checkbox" id="item1" name="item1">
-            <label for="item1">Task 1</label>
-          </li>
-          <li>
-            <input type="checkbox" id="item2" name="item2">
-            <label for="item2">Task 2</label>
-          </li>
-          <li>
-            <input type="checkbox" id="item3" name="item3">
-            <label for="item3">Task 3</label>
-          </li>
-        </ul>
-
+      <div class="task-entry">
+        <form id="new-task-form">
+          <input type="text" id="new-task-input" placeholder="Add a new task" required>
+          <button type="submit">Add Task</button>
+        </form>
       </div>
+
+      <div class="sorting-controls">
+        <button id="sort-name" class="sort-button" data-sort="name-asc"><i class="fa fa-sort-alpha-down"></i></button>
+        <button id="sort-date" class="sort-button" data-sort="date-asc"><i class="fa fa-sort-numeric-down"></i></button>
+      </div>
+
+      <ul class="list">
+        <li>
+          <input type="checkbox" id="item1" name="item1">
+          <label for="item1">Task 1</label>
+          <button class="delete-task-btn">Delete</button>
+        </li>
+        <li>
+          <input type="checkbox" id="item2" name="item2">
+          <label for="item2">Task 2</label>
+          <button class="delete-task-btn">Delete</button>
+        </li>
+        <li>
+          <input type="checkbox" id="item3" name="item3">
+          <label for="item3">Task 3</label>
+          <button class="delete-task-btn">Delete</button>
+        </li>
+      </ul>
 
     </div>
-  
-    <script src="js/script.js"></script>
-  </body>
+
+  </div>
+
+  <script src="js/script.js"></script>
+</body>
+
 </html>
