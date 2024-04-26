@@ -69,6 +69,9 @@ function addTaskToList(text) {
   deleteButton.textContent = 'Delete';
   deleteButton.className = 'delete-task-btn';
 
+  const currentDate = new Date();
+  li.setAttribute('data-date', currentDate.toISOString());
+
   li.appendChild(input);
   li.appendChild(label);
   li.appendChild(deleteButton);
@@ -93,10 +96,12 @@ document.querySelectorAll('.sort-button').forEach(button => {
       // Toggle sort direction and update button text and attribute
       if (currentSort.includes('asc')) {
           this.setAttribute('data-sort', currentSort.replace('asc', 'desc'));
-          this.innerHTML = this.id === 'sort-name' ? 'ABCD &#8595;' : 'DATE &#8595;';
+          this.firstChild.classList.replace('fa-sort-alpha-down', 'fa-sort-alpha-up');
+          this.firstChild.classList.replace('fa-sort-numeric-down', 'fa-sort-numeric-up');
       } else {
           this.setAttribute('data-sort', currentSort.replace('desc', 'asc'));
-          this.innerHTML = this.id === 'sort-name' ? 'ABCD &#8593;' : 'DATE &#8593;';
+          this.firstChild.classList.replace('fa-sort-alpha-up', 'fa-sort-alpha-down');
+          this.firstChild.classList.replace('fa-sort-numeric-up', 'fa-sort-numeric-down');
       }
 
       // Update sorting of the list
