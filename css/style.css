@@ -213,6 +213,34 @@ header>h1 {
   vertical-align: middle;
 }
 
+.delete-list-button {
+  background-color: red;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-left: 10px;
+}
+
+.delete-list-button:hover {
+  background-color: darkred;
+}
+
+.edit-list-button{
+  background-color: green;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 1rem;
+  margin-left: 100px;
+}
+
+.edit-list-button:hover {
+  background-color: darkgreen;
+}
+
 #new-task-form {
   display: flex;
   flex-grow: 1;
