@@ -32,9 +32,29 @@ lists.forEach(function(listItem) {
 
   // Add class to the list item
   li.classList.add('sidebar-list-item');
+  li.id = listItem;
+  li.name = listItem;
 
   // Set the text content of the list item
   li.textContent = listItem;
+  
+  // Creates a button to edit the name of the list.
+  const editListButton = document.createElement('button');
+  editListButton.classList.add('edit-list-button');
+  editListButton.textContent = 'Edit';
+  editListButton.addEventListener('click', editListName);
+  li.appendChild(editListButton);
+
+  // Creates a delete button to the end of the list item.
+  const deleteTaskButton = document.createElement('button');
+  deleteTaskButton.classList.add('delete-list-button');
+  deleteTaskButton.textContent = 'X';
+
+  // Event handler for the delete button.
+  deleteTaskButton.addEventListener('click', deleteList) 
+
+  // Adds the delete button to the list item.
+  li.appendChild(deleteTaskButton);
 
   // Add event listener to the list item
   li.addEventListener('click', handleClick);
@@ -42,6 +62,34 @@ lists.forEach(function(listItem) {
   // Append the list item to the sidebar-lists div
   sidebarLists.appendChild(li);
 });
+
+// Function to handle list item deletion
+function deleteList(event) {
+  // Display a confirmation dialog
+  
+  var confirmation = confirm('Are you sure you want to delete this item?');
+  // If the user clicked "OK", delete the item
+  if (confirmation) {
+    //Needs to be changed to use our API/backend.
+    const li = event.target.parentElement;
+    li.parentNode.removeChild(li);
+  }
+}
+
+function editListName(event) {
+  // Get the current text of the list item
+  var currentText = event.target.parentNode;
+
+  // Ask the user for new text
+  var newText = prompt('Edit list name:', currentText.firstChild.textContent);
+
+  // Will update list name.
+  if (newText) {
+    // Need to be changed to use our API/backend.
+    event.target.parentNode.firstChild.textContent = newText;
+
+  }
+}
 
 document.getElementById('new-task-form').addEventListener('submit', function(event) {
   event.preventDefault();
