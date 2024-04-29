@@ -31,15 +31,17 @@
       </div>
 
       <div class="task-entry">
-        <form id="new-task-form">
+        <form id="new-task-form" class="form-inline">
           <input type="text" id="new-task-input" placeholder="Add a new task" required>
-          <button type="submit">Add Task</button>
-        </form>
-      </div>
+          <button type="submit" class="btn-add-task">Add Task</button>
 
-      <div class="sorting-controls">
-        <button id="sort-name" class="sort-button" data-sort="name-asc"><i class="fa fa-sort-alpha-down"></i></button>
-        <button id="sort-date" class="sort-button" data-sort="date-asc"><i class="fa fa-sort-numeric-down"></i></button>
+          <div class="sorting-controls">
+            <button id="sort-name" class="sort-button" data-sort="name-asc"><i
+                class="fa fa-sort-alpha-down"></i></button>
+            <button id="sort-date" class="sort-button" data-sort="date-asc"><i
+                class="fa fa-sort-numeric-down"></i></button>
+          </div>
+        </form>
       </div>
 
       <ul class="list">
