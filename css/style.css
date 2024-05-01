@@ -40,7 +40,6 @@ header>h1 {
 }
 
 .main-content {
-  padding: 20px;
   flex-grow: 1;
   display: flex;
 }
