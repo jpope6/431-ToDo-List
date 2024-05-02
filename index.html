@@ -20,7 +20,7 @@
 
   <div class="main-content">
     <div class="sidebar">
-      <button class="sidebar-button">Add List</button>
+      <button class="sidebar-button listopen-modal">Add List</button>
       <div class="sidebar-lists"></div>
     </div>
 
@@ -88,6 +88,17 @@
         <button class="close-modal">Close</button>
       </div>
   </dialog>
+
+  <dialog class="list-modal">
+    <div class="listmodal-content">
+      <div class="list-entry">
+        <form id="new-list-form" class="form-inline">
+          <input type="text" id="new-list-input" placeholder="Add a new list" required>
+          <button type="submit" class="btn-add-list">Add List</button>
+        </form>
+      </div>
+      <button class="listclose-modal">Close</button>
+    </div>
 
   <script src="js/script.js"></script>
 </body>

@@ -310,12 +310,12 @@ header>h1 {
   color: #ccc;
 }
 
-.modal {
+.modal, .list-modal {
   padding: 0;
   border-radius: 10px;
 }
 
-.modal-content {
+.modal-content, .listmodal-content {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -323,19 +323,19 @@ header>h1 {
   padding: 1rem;
 }
 
-.modal[open] {
+.modal[open], .listmodal[open] {
   animation: slide-up 500ms forwards, fade-in 500ms forwards;
 }
 
-.modal::backdrop {
+.modal::backdrop, .listmodal::backdrop {
   background: rgba(128, 128, 128, 0.2);
 }
 
-.modal[open]::backdrop {
+.modal[open]::backdrop, .listmodal[open]::backdrop {
   animation: fade-in 500ms forwards;
 }
 
-.close-modal {
+.close-modal, .listclose-modal {
   border-radius: 10px;
   outline: none;
   border: none;

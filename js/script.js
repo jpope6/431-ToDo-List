@@ -91,6 +91,37 @@ function editListName(event) {
   }
 }
 
+document.getElementById('new-list-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+  const listInput = document.getElementById('new-list-input');
+  const listText = listInput.value.trim();
+  if (listText) {
+    addListToList(listText);
+    listInput.value = ''; // Clear input after adding
+  }
+});
+
+function addListToList(text) {
+  const sidebarLists = document.querySelector('.sidebar-lists');
+  const li = document.createElement('p');
+
+  const listclass = 'sidebar-list-item';
+  li.classList.add(listclass);
+  li.id = text;
+  li.textContent = text;  
+
+  const editListButton = document.createElement('button');
+  editListButton.classList.add('edit-list-button');
+  editListButton.textContent = 'Edit';
+
+  const deleteListButton = document.createElement('button');
+  deleteListButton.classList.add('delete-list-button');
+  deleteListButton.textContent = 'X';
+
+  sidebarLists.appendChild(li);
+}
+
+
 document.getElementById('new-task-form').addEventListener('submit', function(event) {
   event.preventDefault();
   const taskInput = document.getElementById('new-task-input');
@@ -226,5 +257,28 @@ modal.addEventListener("click", (e) => {
   if (e.target.nodeName === "DIALOG") {
     modal.close();
     document.getElementById("new-task-form").reset();
+  }
+});
+
+let listmodal = document.querySelector(".list-modal");
+let listopenModalButton = document.querySelector(".listopen-modal");
+let listcloseModalButton = document.querySelector(".listclose-modal");
+
+// open modal pop up
+listopenModalButton.addEventListener("click", () => {
+  listmodal.showModal();
+});
+
+// close modal pop up
+listcloseModalButton.addEventListener("click", () => {
+  listmodal.close();
+  document.getElementById("new-list-form").reset();
+});
+
+// modal closes if you click outside of it
+listmodal.addEventListener("click", (e) => {
+  if (e.target.nodeName === "DIALOG") {
+    listmodal.close();
+    document.getElementById("new-list-form").reset();
   }
 });
