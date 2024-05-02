@@ -25,46 +25,69 @@
     </div>
 
     <div class="to-do-list">
-      <div class="date">
-        <p></p>
+      <div class="date-container">
+        <div class="date-content">
+          <p class="date"></p>
+
+          <div class="date-button-container">
+
+            <button id="sort-name" class="date-button sort-button" data-sort="name-asc">
+              <i class="fa fa-sort-alpha-down"></i>
+            </button>
+
+            <button id="sort-date" class="date-button sort-button" data-sort="date-asc">
+              <i class="fa fa-sort-numeric-down"></i>
+            </button>
+
+            <button class="date-button open-modal">
+              <img src="./images/add.png" alt="+">
+            </button>
+
+          </div>
+
+        </div>
         <hr>
       </div>
 
-      <div class="task-entry">
-        <form id="new-task-form" class="form-inline">
-          <input type="text" id="new-task-input" placeholder="Add a new task" required>
-          <button type="submit" class="btn-add-task">Add Task</button>
-
-          <div class="sorting-controls">
-            <button id="sort-name" class="sort-button" data-sort="name-asc"><i
-                class="fa fa-sort-alpha-down"></i></button>
-            <button id="sort-date" class="sort-button" data-sort="date-asc"><i
-                class="fa fa-sort-numeric-down"></i></button>
-          </div>
-        </form>
-      </div>
 
       <ul class="list">
         <li>
-          <input type="checkbox" id="item1" name="item1">
-          <label for="item1">Task 1</label>
+          <div class="task">
+            <input type="checkbox" id="item1" name="item1">
+            <label for="item1">Task 1</label>
+          </div>
           <button class="delete-task-btn">Delete</button>
         </li>
         <li>
-          <input type="checkbox" id="item2" name="item2">
-          <label for="item2">Task 2</label>
+          <div class="task">
+            <input type="checkbox" id="item2" name="item2">
+            <label for="item2">Task 2</label>
+          </div>
           <button class="delete-task-btn">Delete</button>
         </li>
         <li>
-          <input type="checkbox" id="item3" name="item3">
-          <label for="item3">Task 3</label>
+          <div class="task">
+            <input type="checkbox" id="item3" name="item3">
+            <label for="item3">Task 3</label>
+          </div>
           <button class="delete-task-btn">Delete</button>
         </li>
       </ul>
-
     </div>
-
   </div>
+
+  <dialog class="modal">
+      <div class="modal-content">
+        <div class="task-entry">
+          <form id="new-task-form" class="form-inline">
+            <input type="text" id="new-task-input" placeholder="Add a new task" required>
+            <button type="submit" class="btn-add-task">Add Task</button>
+          </form>
+
+        </div>
+        <button class="close-modal">Close</button>
+      </div>
+  </dialog>
 
   <script src="js/script.js"></script>
 </body>

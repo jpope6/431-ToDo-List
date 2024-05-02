@@ -37,7 +37,7 @@ lists.forEach(function(listItem) {
 
   // Set the text content of the list item
   li.textContent = listItem;
-  
+
   // Creates a button to edit the name of the list.
   const editListButton = document.createElement('button');
   editListButton.classList.add('edit-list-button');
@@ -51,7 +51,7 @@ lists.forEach(function(listItem) {
   deleteTaskButton.textContent = 'X';
 
   // Event handler for the delete button.
-  deleteTaskButton.addEventListener('click', deleteList) 
+  deleteTaskButton.addEventListener('click', deleteList)
 
   // Adds the delete button to the list item.
   li.appendChild(deleteTaskButton);
@@ -66,7 +66,7 @@ lists.forEach(function(listItem) {
 // Function to handle list item deletion
 function deleteList(event) {
   // Display a confirmation dialog
-  
+
   var confirmation = confirm('Are you sure you want to delete this item?');
   // If the user clicked "OK", delete the item
   if (confirmation) {
@@ -96,14 +96,18 @@ document.getElementById('new-task-form').addEventListener('submit', function(eve
   const taskInput = document.getElementById('new-task-input');
   const taskText = taskInput.value.trim();
   if (taskText) {
-      addTaskToList(taskText);
-      taskInput.value = ''; // Clear input after adding
+    addTaskToList(taskText);
+    taskInput.value = ''; // Clear input after adding
   }
 });
 
 function addTaskToList(text) {
   const list = document.querySelector('.list');
   const li = document.createElement('li');
+
+  const taskDiv = document.createElement('div');
+  taskDiv.className = 'task';
+
   const input = document.createElement('input');
   input.type = 'checkbox';
   input.id = text.toLowerCase().replace(/ /g, '-');
@@ -120,8 +124,10 @@ function addTaskToList(text) {
   const currentDate = new Date();
   li.setAttribute('data-date', currentDate.toISOString());
 
-  li.appendChild(input);
-  li.appendChild(label);
+  taskDiv.appendChild(input);
+  taskDiv.appendChild(label);
+
+  li.appendChild(taskDiv);
   li.appendChild(deleteButton);
   list.appendChild(li);
 }
@@ -138,22 +144,23 @@ document.addEventListener('click', function(event) {
 
 document.querySelectorAll('.sort-button').forEach(button => {
   button.addEventListener('click', function() {
-      // Determine current sorting direction
-      const currentSort = this.getAttribute('data-sort');
-      
-      // Toggle sort direction and update button text and attribute
-      if (currentSort.includes('asc')) {
-          this.setAttribute('data-sort', currentSort.replace('asc', 'desc'));
-          this.firstChild.classList.replace('fa-sort-alpha-down', 'fa-sort-alpha-up');
-          this.firstChild.classList.replace('fa-sort-numeric-down', 'fa-sort-numeric-up');
-      } else {
-          this.setAttribute('data-sort', currentSort.replace('desc', 'asc'));
-          this.firstChild.classList.replace('fa-sort-alpha-up', 'fa-sort-alpha-down');
-          this.firstChild.classList.replace('fa-sort-numeric-up', 'fa-sort-numeric-down');
-      }
+    // Determine current sorting direction
+    const currentSort = this.getAttribute('data-sort');
+    const icon = this.querySelector("i")
 
-      // Update sorting of the list
-      sortTasks(this.id, this.getAttribute('data-sort'));
+    // Toggle sort direction and update button text and attribute
+    if (currentSort.includes('asc')) {
+      this.setAttribute('data-sort', currentSort.replace('asc', 'desc'));
+      icon.classList.replace('fa-sort-alpha-down', 'fa-sort-alpha-up');
+      icon.classList.replace('fa-sort-numeric-down', 'fa-sort-numeric-up');
+    } else {
+      this.setAttribute('data-sort', currentSort.replace('desc', 'asc'));
+      icon.classList.replace('fa-sort-alpha-up', 'fa-sort-alpha-down');
+      icon.classList.replace('fa-sort-numeric-up', 'fa-sort-numeric-down');
+    }
+
+    // Update sorting of the list
+    sortTasks(this.id, this.getAttribute('data-sort'));
   });
 });
 
@@ -163,20 +170,20 @@ function sortTasks(sortBy, direction) {
 
   // Sorting logic
   items.sort((a, b) => {
-      let valA, valB;
-      if (sortBy === 'sort-name') {
-          valA = a.querySelector('label').textContent.toLowerCase();
-          valB = b.querySelector('label').textContent.toLowerCase();
-      } else {
-          valA = new Date(a.dataset.date);
-          valB = new Date(b.dataset.date);
-      }
+    let valA, valB;
+    if (sortBy === 'sort-name') {
+      valA = a.querySelector('label').textContent.toLowerCase();
+      valB = b.querySelector('label').textContent.toLowerCase();
+    } else {
+      valA = new Date(a.dataset.date);
+      valB = new Date(b.dataset.date);
+    }
 
-      if (direction === 'name-asc' || direction === 'date-asc') {
-          return valA > valB ? 1 : -1;
-      } else {
-          return valA < valB ? 1 : -1;
-      }
+    if (direction === 'name-asc' || direction === 'date-asc') {
+      return valA > valB ? 1 : -1;
+    } else {
+      return valA < valB ? 1 : -1;
+    }
   });
 
   // Re-append items to list in sorted order
@@ -196,4 +203,28 @@ let monthNames = ["January", "February", "March", "April", "May", "June",
 
 let currentDateStr = monthNames[month] + " " + day + ", " + year;
 
-document.querySelector('.date p').innerHTML = currentDateStr
+document.querySelector('.date').innerHTML = currentDateStr
+
+// Modal Handler
+let modal = document.querySelector(".modal");
+let openModalButton = document.querySelector(".open-modal");
+let closeModalButton = document.querySelector(".close-modal");
+
+// open modal pop up
+openModalButton.addEventListener("click", () => {
+  modal.showModal();
+});
+
+// close modal pop up
+closeModalButton.addEventListener("click", () => {
+  modal.close();
+  document.getElementById("new-task-form").reset();
+});
+
+// modal closes if you click outside of it
+modal.addEventListener("click", (e) => {
+  if (e.target.nodeName === "DIALOG") {
+    modal.close();
+    document.getElementById("new-task-form").reset();
+  }
+});

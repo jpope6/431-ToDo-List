@@ -131,7 +131,7 @@ header>h1 {
   align-items: center;
 }
 
-.date {
+.date-container {
   width: 70%;
   text-align: left;
   color: white;
@@ -142,6 +142,36 @@ header>h1 {
   padding-left: 1rem;
 }
 
+.date-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.date {
+  margin: 0;
+}
+
+.date-button-container {
+  display: flex;
+}
+
+.date-button {
+  width: 50px;
+  height: auto;
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  background-color: var(--primary-background-color);
+  color: white;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  user-select: none;
+}
+
+.date-button:hover {
+  opacity: 0.5;
+}
 
 .to-do-left hr {
   border: none;
@@ -151,16 +181,19 @@ header>h1 {
 }
 
 .list {
+  width: 70%;
   list-style-type: none;
   padding: 0;
   margin: 0;
 }
 
 .list li {
+  width: 100%;
   color: white;
   font-size: 1rem;
   display: flex;
   align-items: center;
+  justify-content: space-between;
   margin-bottom: 0.5rem;
 }
 
@@ -196,20 +229,7 @@ header>h1 {
 }
 
 .sort-button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #333;
-  /* Icon color */
   font-size: 1.5rem;
-  /* Icon size */
-  padding: 0.5rem;
-  transition: color 0.3s ease;
-}
-
-.sort-button:hover {
-  color: #555;
-  /* Darker on hover */
 }
 
 .sort-button i {
@@ -248,6 +268,7 @@ header>h1 {
   display: flex;
   align-items: center;
   gap: 10px;
+  padding: 1rem;
 }
 
 #new-task-form input {
@@ -287,4 +308,64 @@ header>h1 {
 
 #new-task-form input:focus::placeholder {
   color: #ccc;
+}
+
+.modal {
+  padding: 0;
+  border-radius: 10px;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+}
+
+.modal[open] {
+  animation: slide-up 500ms forwards, fade-in 500ms forwards;
+}
+
+.modal::backdrop {
+  background: rgba(128, 128, 128, 0.2);
+}
+
+.modal[open]::backdrop {
+  animation: fade-in 500ms forwards;
+}
+
+.close-modal {
+  border-radius: 10px;
+  outline: none;
+  border: none;
+  background-color: red;
+  color: white;
+  cursor: pointer;
+  transition: all 0.1s ease-in-out;
+  font-size: 18px;
+  padding: 0.5rem 1rem;
+  user-select: none;
+}
+
+.close-modal:hover {
+  filter: brightness(0.8);
+}
+
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-up {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
 }
