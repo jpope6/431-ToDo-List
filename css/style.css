@@ -264,14 +264,14 @@ header>h1 {
   background-color: darkgreen;
 }
 
-#new-task-form {
+#new-task-form, #new-list-form {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 1rem;
 }
 
-#new-task-form input {
+#new-task-form input, #new-list-form input{
   width: 100%;
   padding: 10px 15px;
   border: 2px solid #ccc;
@@ -281,7 +281,7 @@ header>h1 {
   transition: border-color 0.3s ease-in-out;
 }
 
-#new-task-form button {
+#new-task-form button, #new-list-form button{
   padding: 10px 20px;
   background-image: linear-gradient(to right, #06b, #06d);
   color: white;
@@ -292,30 +292,30 @@ header>h1 {
   transition: background-color 0.3s ease;
 }
 
-#new-task-form button:hover {
+#new-task-form button:hover, #new-list-form button:hover{
   background-image: linear-gradient(to right, #058, #05a);
 }
 
-#new-task-form input:focus {
+#new-task-form input:focus, #new-list-form input:focus{
   border-color: #0056b3;
   /* Highlight focus with a color change */
 }
 
-#new-task-form input::placeholder {
+#new-task-form input::placeholder, #new-list-form input::placeholder{
   color: #aaa;
   transition: color 0.3s ease-out;
 }
 
-#new-task-form input:focus::placeholder {
+#new-task-form input:focus::placeholder, #new-list-form input:focus::placeholder{
   color: #ccc;
 }
 
-.modal {
+.modal, .list-modal {
   padding: 0;
   border-radius: 10px;
 }
 
-.modal-content {
+.modal-content, .listmodal-content {
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -323,19 +323,19 @@ header>h1 {
   padding: 1rem;
 }
 
-.modal[open] {
+.modal[open], .listmodal[open] {
   animation: slide-up 500ms forwards, fade-in 500ms forwards;
 }
 
-.modal::backdrop {
+.modal::backdrop, .listmodal::backdrop {
   background: rgba(128, 128, 128, 0.2);
 }
 
-.modal[open]::backdrop {
+.modal[open]::backdrop, .listmodal[open]::backdrop {
   animation: fade-in 500ms forwards;
 }
 
-.close-modal {
+.close-modal, .listclose-modal {
   border-radius: 10px;
   outline: none;
   border: none;
