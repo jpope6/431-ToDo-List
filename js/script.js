@@ -113,10 +113,14 @@ function addListToList(text) {
   const editListButton = document.createElement('button');
   editListButton.classList.add('edit-list-button');
   editListButton.textContent = 'Edit';
+  editListButton.addEventListener('click', editListName);
+  li.appendChild(editListButton);
 
   const deleteListButton = document.createElement('button');
   deleteListButton.classList.add('delete-list-button');
   deleteListButton.textContent = 'X';
+  deleteListButton.addEventListener('click', deleteList);
+  li.appendChild(deleteListButton);
 
   sidebarLists.appendChild(li);
 }
