@@ -26,33 +26,31 @@ function addTaskToList(text) {
   list.appendChild(li);
 }
 
-// List management
-let lists = ["List 1", "List 2", "List 3"];
-const sidebarLists = document.querySelector('.sidebar-lists');
-
-function createListItem(listItemName) {
+function createListItem(list) {
   const li = document.createElement('p');
   li.classList.add('sidebar-list-item');
-  li.id = listItemName;
-  li.textContent = listItemName;
+  li.setAttribute('data-id', list.idx);
+  li.textContent = list.name;
+  
+  // Create Edit Button
   const editListButton = document.createElement('button');
   editListButton.classList.add('edit-list-button');
   editListButton.textContent = 'Edit';
+  editListButton.addEventListener('click', editListName);
+  
+  // Create Delete Button
   const deleteListButton = document.createElement('button');
   deleteListButton.classList.add('delete-list-button');
   deleteListButton.textContent = 'X';
-  editListButton.addEventListener('click', editListName);
-  deleteListButton.addEventListener('click', deleteList);
+  deleteListButton.addEventListener('click', function(event) {
+    deleteList(event, list.idx);
+  });
+  
   li.appendChild(editListButton);
   li.appendChild(deleteListButton);
   li.addEventListener('click', handleClick);
   return li;
 }
-
-lists.forEach(listItem => {
-  const li = createListItem(listItem);
-  sidebarLists.appendChild(li);
-});
 
 function handleClick(event) {
   const listItems = document.querySelectorAll('.sidebar-list-item');
@@ -60,11 +58,33 @@ function handleClick(event) {
   event.target.classList.add('active-sidebar-item');
 }
 
-function deleteList(event) {
+function deleteList(event, listId) {
+  // Prevent the default action if this is within a form or a link
+  event.preventDefault();
+
+  if (!listId) {
+    console.error('List ID not found');
+    return;
+  }
+
+  // Confirm before deleting
   if (confirm('Are you sure you want to delete this item?')) {
-    const li = event.target.parentElement;
-    li.parentNode.removeChild(li);
-    // TODO: Handle deletion in the backend
+    fetch(`api/example.php?id=${listId}`, { method: 'DELETE' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          console.log('List deleted:', data);
+          event.target.closest('.sidebar-list-item').remove();
+          fetchAllLists();
+        } else {
+          console.error('Failed to delete the list:', data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting list:', error);
+      });
+  } else {
+    console.error('List ID not found or invalid element');
   }
 }
 
@@ -80,7 +100,11 @@ function editListName(event) {
 function fetchAllLists() {
   fetch('api/example.php', {method: 'GET'}).then(response => response.json()).then(data => {
     console.log("Fetched lists:", data);
+    if(Array.isArray(data)){
     updateSidebar(data);
+    } else {
+      console.error('Data received is not an array:', data);
+    }
   }).catch(error => console.error('Error fetching lists:', error));
 }
 
@@ -99,16 +123,6 @@ function addNewList(listName) {
       fetchAllLists();  // Refresh the list display
   })
   .catch(error => console.error('Error adding list:', error));
-}
-
-function deleteList(listId) {
-  fetch(`api/example.php?id=${listId}`, { method: 'DELETE' })
-  .then(response => response.json())
-  .then(data => {
-      console.log('List deleted:', data);
-      fetchAllLists();  // Refresh the list display
-  })
-  .catch(error => console.error('Error deleting list:', error));
 }
 
 function updateListName(listId, newName) {
@@ -131,10 +145,20 @@ function updateSidebar(lists) {
   const sidebarLists = document.querySelector('.sidebar-lists');
   sidebarLists.innerHTML = '';
 
-  lists.forEach(list => {
-    const li = createListItem(list.name);
-    sidebarLists.appendChild(li);
+  lists.forEach((list, index) => {
+    try {
+      const li = createListItem(list);
+      sidebarLists.appendChild(li);
+    } catch (error) {
+      console.error(`Error processing list ${index + 1}:`, error)
+    }
   })
+
+  if (lists.length === 0) {
+    const emptyMessage = document.createElement('p');
+    emptyMessage.textContent = 'No lists available';
+    sidebarLists.appendChild(emptyMessage);
+  }
 }
 
 // Date Display
@@ -167,8 +191,11 @@ document.addEventListener('click', function(event) {
 });
 
 document.addEventListener('DOMContentLoaded', function() {
-  setupModal(".modal", ".open-modal", ".close-modal");
-  setupModal(".list-modal", ".listopen-modal", ".listclose-modal");
+  setupModal(".modal", ".open-modal", ".close-modal", "#new-task-form");
+  setupModal(".list-modal", ".listopen-modal", ".listclose-modal", "#new-list-form");
+
+  // Fetch lists from the backend and update sidebar on page load
+  fetchAllLists();
 
   document.getElementById('new-list-form').addEventListener('submit', function(event) {
     event.preventDefault();
@@ -210,6 +237,3 @@ function setupModal(modalSelector, openButtonSelector, closeButtonSelector, form
     }
   });
 }
-
-setupModal(".modal", ".open-modal", ".close-modal", "#new-task-form");
-setupModal(".list-modal", ".listopen-modal", ".listclose-modal", "#new-list-form");
