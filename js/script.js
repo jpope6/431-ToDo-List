@@ -3,12 +3,6 @@ function toggleClass(element, className) {
   element.classList.toggle(className);
 }
 
-// Sidebar interactions
-document.querySelector('.menu-button').addEventListener('click', function() {
-  const sidebar = document.querySelector('.sidebar');
-  toggleClass(sidebar, 'open');
-});
-
 // Task management
 function addTaskToList(text) {
   const list = document.querySelector('.list');
@@ -31,24 +25,6 @@ function addTaskToList(text) {
   li.appendChild(deleteButton);
   list.appendChild(li);
 }
-
-document.getElementById('new-task-form').addEventListener('submit', function(event) {
-  event.preventDefault();
-  const taskInput = document.getElementById('new-task-input');
-  const taskText = taskInput.value.trim();
-  if (taskText) {
-    addTaskToList(taskText);
-    taskInput.value = '';
-  }
-});
-
-document.addEventListener('click', function(event) {
-  if (event.target.classList.contains('delete-task-btn')) {
-    const li = event.target.parentElement;
-    li.parentNode.removeChild(li);
-    // TODO: Handle deletion in the backend
-  }
-});
 
 // List management
 let lists = ["List 1", "List 2", "List 3"];
@@ -101,40 +77,139 @@ function editListName(event) {
   }
 }
 
-document.getElementById('new-list-form').addEventListener('submit', function(event) {
-  event.preventDefault();
-  const listInput = document.getElementById('new-list-input');
-  const listText = listInput.value.trim();
-  if (listText) {
-    const li = createListItem(listText);
+function fetchAllLists() {
+  fetch('api/example.php', {method: 'GET'}).then(response => response.json()).then(data => {
+    console.log("Fetched lists:", data);
+    updateSidebar(data);
+  }).catch(error => console.error('Error fetching lists:', error));
+}
+
+function addNewList(listName) {
+  console.log("Sending list name:", listName);
+  fetch('api/example.php', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: listName })
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log('List added:', data);
+      fetchAllLists();  // Refresh the list display
+  })
+  .catch(error => console.error('Error adding list:', error));
+}
+
+function deleteList(listId) {
+  fetch(`api/example.php?id=${listId}`, { method: 'DELETE' })
+  .then(response => response.json())
+  .then(data => {
+      console.log('List deleted:', data);
+      fetchAllLists();  // Refresh the list display
+  })
+  .catch(error => console.error('Error deleting list:', error));
+}
+
+function updateListName(listId, newName) {
+  fetch('api/example.php', {
+      method: 'PUT',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ id: listId, name: newName })
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log('List updated:', data);
+      fetchAllLists();  // Refresh the list display
+  })
+  .catch(error => console.error('Error updating list:', error));
+}
+
+function updateSidebar(lists) {
+  const sidebarLists = document.querySelector('.sidebar-lists');
+  sidebarLists.innerHTML = '';
+
+  lists.forEach(list => {
+    const li = createListItem(list.name);
     sidebarLists.appendChild(li);
-    listInput.value = '';
-  }
-});
+  })
+}
 
 // Date Display
 const currentDate = new Date();
 const dateDiv = document.querySelector('.date');
 dateDiv.textContent = `${currentDate.toLocaleDateString('en-us', { month: 'long' })} ${currentDate.getDate()}, ${currentDate.getFullYear()}`;
 
+// Sidebar interactions
+document.querySelector('.menu-button').addEventListener('click', function() {
+  const sidebar = document.querySelector('.sidebar');
+  toggleClass(sidebar, 'open');
+});
+
+document.getElementById('new-task-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+  const taskInput = document.getElementById('new-task-input');
+  const taskText = taskInput.value.trim();
+  if (taskText) {
+    addTaskToList(taskText);
+    taskInput.value = '';
+  }
+});
+
+document.addEventListener('click', function(event) {
+  if (event.target.classList.contains('delete-task-btn')) {
+    const li = event.target.parentElement;
+    li.parentNode.removeChild(li);
+    // TODO: Handle deletion in the backend
+  }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  setupModal(".modal", ".open-modal", ".close-modal");
+  setupModal(".list-modal", ".listopen-modal", ".listclose-modal");
+
+  document.getElementById('new-list-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const listInput = document.getElementById('new-list-input');
+    const listName = listInput.value.trim();
+    console.log("Trimmed Name:", listName);  // Debugging
+
+    if (listName) {
+      addNewList(listName);
+      listInput.value = '';  // Clear the input after submitting
+    } else {
+      console.error('No list name provided');
+    }
+  });
+});
+
+
 // Modals
-function setupModal(modalSelector, openButtonSelector, closeButtonSelector) {
+function setupModal(modalSelector, openButtonSelector, closeButtonSelector, formSelector) {
   const modal = document.querySelector(modalSelector);
   const openModalButton = document.querySelector(openButtonSelector);
   const closeModalButton = document.querySelector(closeButtonSelector);
+  const form = modal.querySelector(formSelector);
+
+  if (!form) {
+      console.error("Form not found within the modal using selector:", formSelector);
+      return; // Exit the function if form is not found
+  }
 
   openModalButton.addEventListener('click', () => modal.showModal());
   closeModalButton.addEventListener('click', () => {
     modal.close();
-    document.querySelector(formSelector).reset();
+    form.reset();
   });
   modal.addEventListener('click', (event) => {
-    if (event.target.nodeName === 'DIALOG') {
+    if (event.target === modal) {
       modal.close();
-      document.querySelector(formSelector).reset();
+      form.reset();
     }
   });
 }
 
-setupModal(".modal", ".open-modal", ".close-modal");
-setupModal(".list-modal", ".listopen-modal", ".listclose-modal");
+setupModal(".modal", ".open-modal", ".close-modal", "#new-task-form");
+setupModal(".list-modal", ".listopen-modal", ".listclose-modal", "#new-list-form");

@@ -1,5 +1,9 @@
 <?php
 
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS");
+header("Content-Type: application/json");
+
 require("helpers/handler.php");
 
 $handler = new Handler();
@@ -18,7 +22,7 @@ function GET(Handler $handler) {
 
 function getRecord(Handler $handler, $id) {
     $pdo = $handler->db->PDO();
-    $query = "SELECT * FROM Lists WHERE idx = ?";
+    $query = "SELECT * FROM lists WHERE idx = ?";
     $statement = $pdo->prepare($query);
     $statement->execute([$id]);
     $result = $statement->fetchAll();
@@ -27,7 +31,7 @@ function getRecord(Handler $handler, $id) {
 
 function getAllRecords(Handler $handler) {
     $pdo = $handler->db->PDO();
-    $query = "SELECT * FROM Lists";
+    $query = "SELECT * FROM lists";
     $statement = $pdo->prepare($query);
     $statement->execute();
     $result = $statement->fetchAll();
@@ -40,7 +44,7 @@ function DELETE(Handler $handler) {
         $handler->response->HttpResponseCode(400, "Bad Request", "Missing ID for deletion");
     }
     $pdo = $handler->db->PDO();
-    $query = "DELETE FROM Lists WHERE idx = ?";
+    $query = "DELETE FROM lists WHERE idx = ?";
     $statement = $pdo->prepare($query);
     $statement->execute([$id]);
     $handler->response->json(["success" => true, "message" => "Record deleted"]);
@@ -52,7 +56,7 @@ function POST(Handler $handler) {
         $handler->response->HttpResponseCode(400, "Bad Request", "Missing necessary fields");
     }
     $pdo = $handler->db->PDO();
-    $query = "INSERT INTO Lists (name) VALUES (?)";
+    $query = "INSERT INTO lists (name) VALUES (?)";
     $statement = $pdo->prepare($query);
     $statement->execute([$name]);
     $id = $pdo->lastInsertId();
@@ -66,7 +70,7 @@ function PUT(Handler $handler) {
         $handler->response->HttpResponseCode(400, "Bad Request", "Missing ID or new data for update");
     }
     $pdo = $handler->db->PDO();
-    $query = "UPDATE Lists SET name = ? WHERE idx = ?";
+    $query = "UPDATE lists SET name = ? WHERE idx = ?";
     $statement = $pdo->prepare($query);
     $statement->execute([$name, $id]);
     $handler->response->json(["success" => true, "message" => "Record updated"]);
