@@ -89,17 +89,27 @@ function deleteList(event, listId) {
 }
 
 function editListName(event) {
-  const currentText = event.target.parentNode.firstChild.textContent;
+  event.preventDefault();
+
+  const listItem = event.target.closest('.sidebar-list-item');
+  if(!listItem) {
+    console.error('Could not find the list item');
+    return; 
+  }
+
+  const listId = listItem.getAttribute('data-id');
+  const currentText = listItem.firstChild.textContent;
+
   const newText = prompt('Edit list name:', currentText);
-  if (newText) {
-    event.target.parentNode.firstChild.textContent = newText;
-    // TODO: Update list name in the backend
+  if (newText && newText !== currentText) { 
+    listItem.firstChild.textContent = newText;
+
+    updateListName(listId, newText);
   }
 }
 
 function fetchAllLists() {
   fetch('api/example.php', {method: 'GET'}).then(response => response.json()).then(data => {
-    console.log("Fetched lists:", data);
     if(Array.isArray(data)){
     updateSidebar(data);
     } else {
@@ -109,7 +119,6 @@ function fetchAllLists() {
 }
 
 function addNewList(listName) {
-  console.log("Sending list name:", listName);
   fetch('api/example.php', {
       method: 'POST',
       headers: {
@@ -126,19 +135,33 @@ function addNewList(listName) {
 }
 
 function updateListName(listId, newName) {
-  fetch('api/example.php', {
+  fetch(`api/example.php?id=${listId}`, {
       method: 'PUT',
       headers: {
           'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ id: listId, name: newName })
+      body: JSON.stringify({ name: newName })
   })
-  .then(response => response.json())
+  .then(response => { 
+    if (!response.ok){
+      throw new Error(`HTTP error, status = ${response.status}`);
+    }
+    return response.json()
+  })
   .then(data => {
-      console.log('List updated:', data);
+    if(!data.success) {
+      console.error('Failed to update list:', data.message);
+      alert('Failed to update list. Please try again');
       fetchAllLists();  // Refresh the list display
+    } else {
+      // do nothing; its successful
+    }
   })
-  .catch(error => console.error('Error updating list:', error));
+  .catch(error => {
+    console.error('Error updating list:', error);
+    alert('Error updating list. Please try again!');
+    fetchAllLists(); 
+  });
 }
 
 function updateSidebar(lists) {

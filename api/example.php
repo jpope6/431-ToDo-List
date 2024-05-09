@@ -64,10 +64,14 @@ function POST(Handler $handler) {
 }
 
 function PUT(Handler $handler) {
-    $id = $handler->request->input['id'] ?? null;
-    $name = $handler->request->input['name'] ?? null;
+    $id = $handler->request->get['id'] ?? null;
+
+    $input = json_decode(file_get_contents('php://input'), true);
+    $name = $input['name'] ?? null;
+
     if (!$id || !$name) {
         $handler->response->HttpResponseCode(400, "Bad Request", "Missing ID or new data for update");
+        return;
     }
     $pdo = $handler->db->PDO();
     $query = "UPDATE lists SET name = ? WHERE idx = ?";
