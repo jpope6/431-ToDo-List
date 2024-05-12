@@ -55,8 +55,94 @@ function createListItem(list) {
 function handleClick(event) {
   const listItems = document.querySelectorAll('.sidebar-list-item');
   listItems.forEach(item => item.classList.remove('active-sidebar-item'));
-  event.target.classList.add('active-sidebar-item');
+  const listItem = event.target.closest('.sidebar-list-item');
+
+  if (listItem) {
+    listItem.classList.add('active-sidebar-item');
+    const listId = listItem.getAttribute('data-id');
+    fetchListItems(listId);
+  }
 }
+
+function fetchListItems(listId) {
+  console.log("Fetching items for list ID:", listId);
+  fetch(`api/example.php?list_id=${listId}`, { method: 'GET'}).then(response => response.json()).then(items => {
+    console.log("Items fetched:", items);
+    updateTaskListDisplay(items);
+  }).catch(error => console.error('Error fetching list items:', error));
+}
+
+function updateTaskListDisplay(items) {
+  const taskList = document.querySelector('.list');
+  taskList.innerHTML = '';
+  items.forEach(item => {
+    const listItem = createTaskListItem(item);
+    taskList.appendChild(listItem);
+  });
+}
+
+function addListItem(text, listId) {
+  console.log("Adding new item:", text, "to list:", listId);
+  fetch('api/example.php', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text: text, list_id: listId })  // Ensure keys match those expected by the server
+  })
+  .then(response => response.json())
+  .then(data => {
+      console.log('List item added:', data);
+      fetchListItems(listId);  // Refresh the list items
+  })
+  .catch(error => console.error('Error adding list item:', error));
+}
+
+function createTaskListItem(item) {
+  const li = document.createElement('li');
+  const taskDiv = document.createElement('div');
+  taskDiv.className = 'task';
+
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.checked = item.checked;
+  input.id = item.idx; // Assuming 'idx' is the ID field for items
+  input.name = item.idx;
+  
+  const label = document.createElement('label');
+  label.htmlFor = item.idx;
+  label.textContent = item.text;
+  
+  const deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.className = 'delete-task-btn';
+  deleteButton.addEventListener('click', () => deleteTaskItem(item.idx));
+
+  taskDiv.appendChild(input);
+  taskDiv.appendChild(label);
+  li.appendChild(taskDiv);
+  li.appendChild(deleteButton);
+  
+  return li;
+}
+
+function deleteTaskItem(itemId) {
+  if (confirm('Are you sure you want to delete this task?')) {
+    fetch(`api/example.php?item_id=${itemId}`, { method: 'DELETE' })
+      .then(response => response.json())
+      .then(result => {
+        if (result.success) {
+          console.log('Task item deleted:', result);
+          const listItem = document.querySelector(`input[id='${itemId}']`).parentNode.parentNode;
+          listItem.remove();
+        } else {
+          console.error('Failed to delete task item:', result.message);
+        }
+      })
+      .catch(error => console.error('Error deleting task item:', error));
+  }
+}
+
 
 function deleteList(event, listId) {
   // Prevent the default action if this is within a form or a link
@@ -199,9 +285,16 @@ document.getElementById('new-task-form').addEventListener('submit', function(eve
   event.preventDefault();
   const taskInput = document.getElementById('new-task-input');
   const taskText = taskInput.value.trim();
-  if (taskText) {
-    addTaskToList(taskText);
+  console.log("Task text:", taskText);
+
+  const activeListId = document.querySelector('.sidebar-list-item.active-sidebar-item')?.getAttribute('data-id');
+  console.log("Active list ID:", activeListId);
+  
+  if (taskText && activeListId) {
+    addListItem(taskText, activeListId);
     taskInput.value = '';
+  } else {
+    console.error('No task text provided or no active list selected');
   }
 });
 
