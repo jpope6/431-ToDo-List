@@ -31,13 +31,13 @@ function createListItem(list) {
   li.classList.add('sidebar-list-item');
   li.setAttribute('data-id', list.idx);
   li.textContent = list.name;
-  
+
   // Create Edit Button
   const editListButton = document.createElement('button');
   editListButton.classList.add('edit-list-button');
   editListButton.textContent = 'Edit';
   editListButton.addEventListener('click', editListName);
-  
+
   // Create Delete Button
   const deleteListButton = document.createElement('button');
   deleteListButton.classList.add('delete-list-button');
@@ -45,7 +45,7 @@ function createListItem(list) {
   deleteListButton.addEventListener('click', function(event) {
     deleteList(event, list.idx);
   });
-  
+
   li.appendChild(editListButton);
   li.appendChild(deleteListButton);
   li.addEventListener('click', handleClick);
@@ -65,12 +65,25 @@ function handleClick(event) {
 }
 
 function fetchListItems(listId) {
-  fetch(`api/example.php?list_id=${listId}`, { method: 'GET'}).then(response => response.json()).then(items => {
-    updateTaskListDisplay(items);
-  }).catch(error => console.error('Error fetching list items:', error));
+  fetch(`api/example.php?list_id=${listId}`, { method: 'GET' })
+    .then(response => response.json()).then(items => {
+      updateTaskListDisplay(items);
+    }).catch(error => console.error('Error fetching list items:', error));
 }
 
 function updateTaskListDisplay(items) {
+  items.sort((a, b) => {
+    // First, compare checked status
+    if (a.checked && !b.checked) {
+      return -1;
+    } else if (!a.checked && b.checked) {
+      return 1;
+    } else {
+      // If both have the same checked status, compare creation date
+      return new Date(a.created) - new Date(b.created);
+    }
+  });
+
   const taskList = document.querySelector('.list');
   taskList.innerHTML = '';
   items.forEach(item => {
@@ -81,17 +94,17 @@ function updateTaskListDisplay(items) {
 
 function addListItem(text, listId) {
   fetch('api/example.php', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ text: text, list_id: listId }) 
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ text: text, list_id: listId })
   })
-  .then(response => response.json())
-  .then(data => {
+    .then(response => response.json())
+    .then(data => {
       fetchListItems(listId);
-  })
-  .catch(error => console.error('Error adding list item:', error));
+    })
+    .catch(error => console.error('Error adding list item:', error));
 }
 
 function updateListItemStatus(itemId, isChecked) {
@@ -102,13 +115,13 @@ function updateListItemStatus(itemId, isChecked) {
     },
     body: JSON.stringify({ checked: isChecked })
   })
-  .then(response => response.json())
-  .then(result => {
-    if (!result.success) {
-      console.error('Failed to update list item status:', result.message);
-    }
-  })
-  .catch(error => console.error('Error updating list item status:', error));
+    .then(response => response.json())
+    .then(result => {
+      if (!result.success) {
+        console.error('Failed to update list item status:', result.message);
+      }
+    })
+    .catch(error => console.error('Error updating list item status:', error));
 }
 
 function createTaskListItem(item) {
@@ -125,11 +138,11 @@ function createTaskListItem(item) {
   input.addEventListener('change', () => {
     updateListItemStatus(item.idx, input.checked);
   });
-  
+
   const label = document.createElement('label');
   label.htmlFor = `item-${item.idx}`;
   label.textContent = item.text;
-  
+
   const deleteButton = document.createElement('button');
   deleteButton.textContent = 'Delete';
   deleteButton.className = 'delete-task-btn';
@@ -139,7 +152,7 @@ function createTaskListItem(item) {
   taskDiv.appendChild(label);
   li.appendChild(taskDiv);
   li.appendChild(deleteButton);
-  
+
   return li;
 }
 
@@ -190,16 +203,16 @@ function editListName(event) {
   event.preventDefault();
 
   const listItem = event.target.closest('.sidebar-list-item');
-  if(!listItem) {
+  if (!listItem) {
     console.error('Could not find the list item');
-    return; 
+    return;
   }
 
   const listId = listItem.getAttribute('data-id');
   const currentText = listItem.firstChild.textContent;
 
   const newText = prompt('Edit list name:', currentText);
-  if (newText && newText !== currentText) { 
+  if (newText && newText !== currentText) {
     listItem.firstChild.textContent = newText;
 
     updateListName(listId, newText);
@@ -207,9 +220,9 @@ function editListName(event) {
 }
 
 function fetchAllLists() {
-  fetch('api/example.php', {method: 'GET'}).then(response => response.json()).then(data => {
-    if(Array.isArray(data)){
-    updateSidebar(data);
+  fetch('api/example.php', { method: 'GET' }).then(response => response.json()).then(data => {
+    if (Array.isArray(data)) {
+      updateSidebar(data);
     } else {
       console.error('Data received is not an array:', data);
     }
@@ -218,45 +231,45 @@ function fetchAllLists() {
 
 function addNewList(listName) {
   fetch('api/example.php', {
-      method: 'POST',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name: listName })
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name: listName })
   })
-  .then(response => response.json())
-  .then(data => {
+    .then(response => response.json())
+    .then(data => {
       fetchAllLists();
-  })
-  .catch(error => console.error('Error adding list:', error));
+    })
+    .catch(error => console.error('Error adding list:', error));
 }
 
 function updateListName(listId, newName) {
   fetch(`api/example.php?id=${listId}`, {
-      method: 'PUT',
-      headers: {
-          'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ name: newName })
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ name: newName })
   })
-  .then(response => { 
-    if (!response.ok){
-      throw new Error(`HTTP error, status = ${response.status}`);
-    }
-    return response.json()
-  })
-  .then(data => {
-    if(!data.success) {
-      console.error('Failed to update list:', data.message);
-      alert('Failed to update list. Please try again');
-      fetchAllLists();  // Refresh the list display
-    }
-  })
-  .catch(error => {
-    console.error('Error updating list:', error);
-    alert('Error updating list. Please try again!');
-    fetchAllLists(); 
-  });
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error, status = ${response.status}`);
+      }
+      return response.json()
+    })
+    .then(data => {
+      if (!data.success) {
+        console.error('Failed to update list:', data.message);
+        alert('Failed to update list. Please try again');
+        fetchAllLists();  // Refresh the list display
+      }
+    })
+    .catch(error => {
+      console.error('Error updating list:', error);
+      alert('Error updating list. Please try again!');
+      fetchAllLists();
+    });
 }
 
 function updateSidebar(lists) {
@@ -296,7 +309,7 @@ document.getElementById('new-task-form').addEventListener('submit', function(eve
   const taskText = taskInput.value.trim();
 
   const activeListId = document.querySelector('.sidebar-list-item.active-sidebar-item')?.getAttribute('data-id');
-  
+
   if (taskText && activeListId) {
     addListItem(taskText, activeListId);
     taskInput.value = '';
@@ -339,27 +352,27 @@ document.addEventListener('DOMContentLoaded', function() {
   dateSortButton.addEventListener('click', function() {
     // Get the current sort type
     const currentSortType = this.getAttribute('data-sort-type') || 'list-date-asc';
-  
+
     // Determine the new sort type
     const newSortType = currentSortType === 'list-date-asc' ? 'list-date-desc' : 'list-date-asc';
-  
+
     // Update the sort type on the button
     this.setAttribute('data-sort-type', newSortType);
-  
+
     // Sort the data
     sortData(newSortType);
   });
-  
+
   nameSortButton.addEventListener('click', function() {
     // Get the current sort type
     const currentSortType = this.getAttribute('data-sort-type') || 'list-name-asc';
-  
+
     // Determine the new sort type
     const newSortType = currentSortType === 'list-name-asc' ? 'list-name-desc' : 'list-name-asc';
-  
+
     // Update the sort type on the button
     this.setAttribute('data-sort-type', newSortType);
-  
+
     // Sort the data
     sortData(newSortType);
   });
@@ -370,15 +383,15 @@ function sortData(sortType) {
   fetch('api/example.php')
     .then(response => response.json())
     .then(data => {
-      if(Array.isArray(data)){
+      if (Array.isArray(data)) {
         // Sort the data
-        if(sortType === 'list-date-asc') {
+        if (sortType === 'list-date-asc') {
           data.sort((a, b) => new Date(a.created) - new Date(b.created));
-        } else if(sortType === 'list-date-desc') {
+        } else if (sortType === 'list-date-desc') {
           data.sort((a, b) => new Date(b.created) - new Date(a.created));
-        } else if(sortType === 'list-name-asc') {
+        } else if (sortType === 'list-name-asc') {
           data.sort((a, b) => a.name.localeCompare(b.name));
-        } else if(sortType === 'list-name-desc') {
+        } else if (sortType === 'list-name-desc') {
           data.sort((a, b) => b.name.localeCompare(a.name));
         }
 
@@ -400,8 +413,8 @@ function setupModal(modalSelector, openButtonSelector, closeButtonSelector, form
   const form = modal.querySelector(formSelector);
 
   if (!form) {
-      console.error("Form not found within the modal using selector:", formSelector);
-      return; // Exit the function if form is not found
+    console.error("Form not found within the modal using selector:", formSelector);
+    return; // Exit the function if form is not found
   }
 
   openModalButton.addEventListener('click', () => modal.showModal());
