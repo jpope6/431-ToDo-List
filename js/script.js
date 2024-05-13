@@ -1,288 +1,361 @@
-// Open sidebar
-document.querySelector('.menu-button').addEventListener('click', function() {
-  var sidebar = document.querySelector('.sidebar');
-  if (sidebar.classList.contains('open')) {
-    sidebar.classList.remove('open');
-  } else {
-    sidebar.classList.add('open');
-  }
-});
-
-// Get all the lists and put them in the siderbar
-// NOTE: this will need to be changed to use out API 
-let lists = ["List 1", "List 2", "List 3"]
-var sidebarLists = document.querySelector('.sidebar-lists');
-
-// Function to handle list item click
-function handleClick(event) {
-  // Remove the class 'active' from all list items
-  var listItems = document.querySelectorAll('.sidebar-list-item');
-  listItems.forEach(function(item) {
-    item.classList.remove('active-sidebar-item');
-  });
-
-  // Add the class 'active' to the clicked list item
-  event.target.classList.add('active-sidebar-item');
+// Utility functions
+function toggleClass(element, className) {
+  element.classList.toggle(className);
 }
 
-// Loop through the lists array
-lists.forEach(function(listItem) {
-  // Create a new list item element
-  var li = document.createElement('p');
-
-  // Add class to the list item
-  li.classList.add('sidebar-list-item');
-  li.id = listItem;
-  li.name = listItem;
-
-  // Set the text content of the list item
-  li.textContent = listItem;
-
-  // Creates a button to edit the name of the list.
-  const editListButton = document.createElement('button');
-  editListButton.classList.add('edit-list-button');
-  editListButton.textContent = 'Edit';
-  editListButton.addEventListener('click', editListName);
-  li.appendChild(editListButton);
-
-  // Creates a delete button to the end of the list item.
-  const deleteTaskButton = document.createElement('button');
-  deleteTaskButton.classList.add('delete-list-button');
-  deleteTaskButton.textContent = 'X';
-
-  // Event handler for the delete button.
-  deleteTaskButton.addEventListener('click', deleteList)
-
-  // Adds the delete button to the list item.
-  li.appendChild(deleteTaskButton);
-
-  // Add event listener to the list item
-  li.addEventListener('click', handleClick);
-
-  // Append the list item to the sidebar-lists div
-  sidebarLists.appendChild(li);
-});
-
-// Function to handle list item deletion
-function deleteList(event) {
-  // Display a confirmation dialog
-
-  var confirmation = confirm('Are you sure you want to delete this item?');
-  // If the user clicked "OK", delete the item
-  if (confirmation) {
-    //Needs to be changed to use our API/backend.
-    const li = event.target.parentElement;
-    li.parentNode.removeChild(li);
-  }
-}
-
-function editListName(event) {
-  // Get the current text of the list item
-  var currentText = event.target.parentNode;
-
-  // Ask the user for new text
-  var newText = prompt('Edit list name:', currentText.firstChild.textContent);
-
-  // Will update list name.
-  if (newText) {
-    // Need to be changed to use our API/backend.
-    event.target.parentNode.firstChild.textContent = newText;
-
-  }
-}
-
-document.getElementById('new-list-form').addEventListener('submit', function(event) {
-  event.preventDefault();
-  const listInput = document.getElementById('new-list-input');
-  const listText = listInput.value.trim();
-  if (listText) {
-    addListToList(listText);
-    listInput.value = ''; // Clear input after adding
-  }
-});
-
-function addListToList(text) {
-  const sidebarLists = document.querySelector('.sidebar-lists');
-  const li = document.createElement('p');
-
-  const listclass = 'sidebar-list-item';
-  li.classList.add(listclass);
-  li.id = text;
-  li.textContent = text;  
-
-  const editListButton = document.createElement('button');
-  editListButton.classList.add('edit-list-button');
-  editListButton.textContent = 'Edit';
-  editListButton.addEventListener('click', editListName);
-  li.appendChild(editListButton);
-
-  const deleteListButton = document.createElement('button');
-  deleteListButton.classList.add('delete-list-button');
-  deleteListButton.textContent = 'X';
-  deleteListButton.addEventListener('click', deleteList);
-  li.appendChild(deleteListButton);
-
-  sidebarLists.appendChild(li);
-}
-
-
-document.getElementById('new-task-form').addEventListener('submit', function(event) {
-  event.preventDefault();
-  const taskInput = document.getElementById('new-task-input');
-  const taskText = taskInput.value.trim();
-  if (taskText) {
-    addTaskToList(taskText);
-    taskInput.value = ''; // Clear input after adding
-  }
-});
-
+// Task management
 function addTaskToList(text) {
   const list = document.querySelector('.list');
   const li = document.createElement('li');
-
   const taskDiv = document.createElement('div');
   taskDiv.className = 'task';
-
   const input = document.createElement('input');
   input.type = 'checkbox';
   input.id = text.toLowerCase().replace(/ /g, '-');
   input.name = text.toLowerCase().replace(/ /g, '-');
-
   const label = document.createElement('label');
   label.htmlFor = input.id;
   label.textContent = text;
-
   const deleteButton = document.createElement('button');
   deleteButton.textContent = 'Delete';
   deleteButton.className = 'delete-task-btn';
-
-  const currentDate = new Date();
-  li.setAttribute('data-date', currentDate.toISOString());
-
   taskDiv.appendChild(input);
   taskDiv.appendChild(label);
-
   li.appendChild(taskDiv);
   li.appendChild(deleteButton);
   list.appendChild(li);
 }
 
-// Event listener for delete buttons to handle task removal
+function createListItem(list) {
+  const li = document.createElement('p');
+  li.classList.add('sidebar-list-item');
+  li.setAttribute('data-id', list.idx);
+  li.textContent = list.name;
+  
+  // Create Edit Button
+  const editListButton = document.createElement('button');
+  editListButton.classList.add('edit-list-button');
+  editListButton.textContent = 'Edit';
+  editListButton.addEventListener('click', editListName);
+  
+  // Create Delete Button
+  const deleteListButton = document.createElement('button');
+  deleteListButton.classList.add('delete-list-button');
+  deleteListButton.textContent = 'X';
+  deleteListButton.addEventListener('click', function(event) {
+    deleteList(event, list.idx);
+  });
+  
+  li.appendChild(editListButton);
+  li.appendChild(deleteListButton);
+  li.addEventListener('click', handleClick);
+  return li;
+}
+
+function handleClick(event) {
+  const listItems = document.querySelectorAll('.sidebar-list-item');
+  listItems.forEach(item => item.classList.remove('active-sidebar-item'));
+  const listItem = event.target.closest('.sidebar-list-item');
+
+  if (listItem) {
+    listItem.classList.add('active-sidebar-item');
+    const listId = listItem.getAttribute('data-id');
+    fetchListItems(listId);
+  }
+}
+
+function fetchListItems(listId) {
+  fetch(`api/example.php?list_id=${listId}`, { method: 'GET'}).then(response => response.json()).then(items => {
+    updateTaskListDisplay(items);
+  }).catch(error => console.error('Error fetching list items:', error));
+}
+
+function updateTaskListDisplay(items) {
+  const taskList = document.querySelector('.list');
+  taskList.innerHTML = '';
+  items.forEach(item => {
+    const listItem = createTaskListItem(item);
+    taskList.appendChild(listItem);
+  });
+}
+
+function addListItem(text, listId) {
+  fetch('api/example.php', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ text: text, list_id: listId }) 
+  })
+  .then(response => response.json())
+  .then(data => {
+      fetchListItems(listId);
+  })
+  .catch(error => console.error('Error adding list item:', error));
+}
+
+function updateListItemStatus(itemId, isChecked) {
+  fetch(`api/example.php?item_id=${itemId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ checked: isChecked })
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (!result.success) {
+      console.error('Failed to update list item status:', result.message);
+    }
+  })
+  .catch(error => console.error('Error updating list item status:', error));
+}
+
+function createTaskListItem(item) {
+  const li = document.createElement('li');
+  const taskDiv = document.createElement('div');
+  taskDiv.className = 'task';
+
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.checked = item.checked;
+  input.id = `item-${item.idx}`;
+  input.name = item.idx;
+
+  input.addEventListener('change', () => {
+    updateListItemStatus(item.idx, input.checked);
+  });
+  
+  const label = document.createElement('label');
+  label.htmlFor = `item-${item.idx}`;
+  label.textContent = item.text;
+  
+  const deleteButton = document.createElement('button');
+  deleteButton.textContent = 'Delete';
+  deleteButton.className = 'delete-task-btn';
+  deleteButton.addEventListener('click', () => deleteTaskItem(item.idx));
+
+  taskDiv.appendChild(input);
+  taskDiv.appendChild(label);
+  li.appendChild(taskDiv);
+  li.appendChild(deleteButton);
+  
+  return li;
+}
+
+function deleteTaskItem(itemId) {
+  if (confirm('Are you sure you want to delete this task?')) {
+    fetch(`api/example.php?item_id=${itemId}`, { method: 'DELETE' })
+      .then(response => response.json())
+      .then(result => {
+        if (result.success) {
+          const listItem = document.querySelector(`input[id='${itemId}']`).parentNode.parentNode;
+          listItem.remove();
+        } else {
+          console.error('Failed to delete task item:', result.message);
+        }
+      })
+      .catch(error => console.error('Error deleting task item:', error));
+  }
+}
+
+function deleteList(event, listId) {
+  event.preventDefault();
+
+  if (!listId) {
+    console.error('List ID not found');
+    return;
+  }
+
+  if (confirm('Are you sure you want to delete this item?')) {
+    fetch(`api/example.php?id=${listId}`, { method: 'DELETE' })
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          event.target.closest('.sidebar-list-item').remove();
+          fetchAllLists();
+        } else {
+          console.error('Failed to delete the list:', data.message);
+        }
+      })
+      .catch(error => {
+        console.error('Error deleting list:', error);
+      });
+  } else {
+    console.error('List ID not found or invalid element');
+  }
+}
+
+function editListName(event) {
+  event.preventDefault();
+
+  const listItem = event.target.closest('.sidebar-list-item');
+  if(!listItem) {
+    console.error('Could not find the list item');
+    return; 
+  }
+
+  const listId = listItem.getAttribute('data-id');
+  const currentText = listItem.firstChild.textContent;
+
+  const newText = prompt('Edit list name:', currentText);
+  if (newText && newText !== currentText) { 
+    listItem.firstChild.textContent = newText;
+
+    updateListName(listId, newText);
+  }
+}
+
+function fetchAllLists() {
+  fetch('api/example.php', {method: 'GET'}).then(response => response.json()).then(data => {
+    if(Array.isArray(data)){
+    updateSidebar(data);
+    } else {
+      console.error('Data received is not an array:', data);
+    }
+  }).catch(error => console.error('Error fetching lists:', error));
+}
+
+function addNewList(listName) {
+  fetch('api/example.php', {
+      method: 'POST',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: listName })
+  })
+  .then(response => response.json())
+  .then(data => {
+      fetchAllLists();
+  })
+  .catch(error => console.error('Error adding list:', error));
+}
+
+function updateListName(listId, newName) {
+  fetch(`api/example.php?id=${listId}`, {
+      method: 'PUT',
+      headers: {
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: newName })
+  })
+  .then(response => { 
+    if (!response.ok){
+      throw new Error(`HTTP error, status = ${response.status}`);
+    }
+    return response.json()
+  })
+  .then(data => {
+    if(!data.success) {
+      console.error('Failed to update list:', data.message);
+      alert('Failed to update list. Please try again');
+      fetchAllLists();  // Refresh the list display
+    }
+  })
+  .catch(error => {
+    console.error('Error updating list:', error);
+    alert('Error updating list. Please try again!');
+    fetchAllLists(); 
+  });
+}
+
+function updateSidebar(lists) {
+  const sidebarLists = document.querySelector('.sidebar-lists');
+  sidebarLists.innerHTML = '';
+
+  lists.forEach((list, index) => {
+    try {
+      const li = createListItem(list);
+      sidebarLists.appendChild(li);
+    } catch (error) {
+      console.error(`Error processing list ${index + 1}:`, error)
+    }
+  })
+
+  if (lists.length === 0) {
+    const emptyMessage = document.createElement('p');
+    emptyMessage.textContent = 'No lists available';
+    sidebarLists.appendChild(emptyMessage);
+  }
+}
+
+// Date Display
+const currentDate = new Date();
+const dateDiv = document.querySelector('.date');
+dateDiv.textContent = `${currentDate.toLocaleDateString('en-us', { month: 'long' })} ${currentDate.getDate()}, ${currentDate.getFullYear()}`;
+
+// Sidebar interactions
+document.querySelector('.menu-button').addEventListener('click', function() {
+  const sidebar = document.querySelector('.sidebar');
+  toggleClass(sidebar, 'open');
+});
+
+document.getElementById('new-task-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+  const taskInput = document.getElementById('new-task-input');
+  const taskText = taskInput.value.trim();
+
+  const activeListId = document.querySelector('.sidebar-list-item.active-sidebar-item')?.getAttribute('data-id');
+  
+  if (taskText && activeListId) {
+    addListItem(taskText, activeListId);
+    taskInput.value = '';
+  } else {
+    console.error('No task text provided or no active list selected');
+  }
+});
+
 document.addEventListener('click', function(event) {
   if (event.target.classList.contains('delete-task-btn')) {
     const li = event.target.parentElement;
     li.parentNode.removeChild(li);
-    // TODO Later; Handle deletion in the backend
+    // TODO: Handle deletion in the backend
   }
 });
 
+document.addEventListener('DOMContentLoaded', function() {
+  setupModal(".modal", ".open-modal", ".close-modal", "#new-task-form");
+  setupModal(".list-modal", ".listopen-modal", ".listclose-modal", "#new-list-form");
 
-document.querySelectorAll('.sort-button').forEach(button => {
-  button.addEventListener('click', function() {
-    // Determine current sorting direction
-    const currentSort = this.getAttribute('data-sort');
-    const icon = this.querySelector("i")
+  // Fetch lists from the backend and update sidebar on page load
+  fetchAllLists();
 
-    // Toggle sort direction and update button text and attribute
-    if (currentSort.includes('asc')) {
-      this.setAttribute('data-sort', currentSort.replace('asc', 'desc'));
-      icon.classList.replace('fa-sort-alpha-down', 'fa-sort-alpha-up');
-      icon.classList.replace('fa-sort-numeric-down', 'fa-sort-numeric-up');
+  document.getElementById('new-list-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const listInput = document.getElementById('new-list-input');
+    const listName = listInput.value.trim();
+
+    if (listName) {
+      addNewList(listName);
+      listInput.value = '';  // Clear the input after submitting
     } else {
-      this.setAttribute('data-sort', currentSort.replace('desc', 'asc'));
-      icon.classList.replace('fa-sort-alpha-up', 'fa-sort-alpha-down');
-      icon.classList.replace('fa-sort-numeric-up', 'fa-sort-numeric-down');
-    }
-
-    // Update sorting of the list
-    sortTasks(this.id, this.getAttribute('data-sort'));
-  });
-});
-
-function sortTasks(sortBy, direction) {
-  const list = document.querySelector('.list');
-  const items = Array.from(list.querySelectorAll('li'));
-
-  // Sorting logic
-  items.sort((a, b) => {
-    let valA, valB;
-    if (sortBy === 'sort-name') {
-      valA = a.querySelector('label').textContent.toLowerCase();
-      valB = b.querySelector('label').textContent.toLowerCase();
-    } else {
-      valA = new Date(a.dataset.date);
-      valB = new Date(b.dataset.date);
-    }
-
-    if (direction === 'name-asc' || direction === 'date-asc') {
-      return valA > valB ? 1 : -1;
-    } else {
-      return valA < valB ? 1 : -1;
+      console.error('No list name provided');
     }
   });
-
-  // Re-append items to list in sorted order
-  items.forEach(item => list.appendChild(item));
-}
-
-
-// Get the current date and put it in the .date div
-let currentDate = new Date();
-let day = currentDate.getDate();
-let month = currentDate.getMonth();
-let year = currentDate.getFullYear();
-
-let monthNames = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
-
-let currentDateStr = monthNames[month] + " " + day + ", " + year;
-
-document.querySelector('.date').innerHTML = currentDateStr
-
-// Modal Handler
-let modal = document.querySelector(".modal");
-let openModalButton = document.querySelector(".open-modal");
-let closeModalButton = document.querySelector(".close-modal");
-
-// open modal pop up
-openModalButton.addEventListener("click", () => {
-  modal.showModal();
 });
 
-// close modal pop up
-closeModalButton.addEventListener("click", () => {
-  modal.close();
-  document.getElementById("new-task-form").reset();
-});
 
-// modal closes if you click outside of it
-modal.addEventListener("click", (e) => {
-  if (e.target.nodeName === "DIALOG") {
+// Modals
+function setupModal(modalSelector, openButtonSelector, closeButtonSelector, formSelector) {
+  const modal = document.querySelector(modalSelector);
+  const openModalButton = document.querySelector(openButtonSelector);
+  const closeModalButton = document.querySelector(closeButtonSelector);
+  const form = modal.querySelector(formSelector);
+
+  if (!form) {
+      console.error("Form not found within the modal using selector:", formSelector);
+      return; // Exit the function if form is not found
+  }
+
+  openModalButton.addEventListener('click', () => modal.showModal());
+  closeModalButton.addEventListener('click', () => {
     modal.close();
-    document.getElementById("new-task-form").reset();
-  }
-});
-
-let listmodal = document.querySelector(".list-modal");
-let listopenModalButton = document.querySelector(".listopen-modal");
-let listcloseModalButton = document.querySelector(".listclose-modal");
-
-// open modal pop up
-listopenModalButton.addEventListener("click", () => {
-  listmodal.showModal();
-});
-
-// close modal pop up
-listcloseModalButton.addEventListener("click", () => {
-  listmodal.close();
-  document.getElementById("new-list-form").reset();
-});
-
-// modal closes if you click outside of it
-listmodal.addEventListener("click", (e) => {
-  if (e.target.nodeName === "DIALOG") {
-    listmodal.close();
-    document.getElementById("new-list-form").reset();
-  }
-});
+    form.reset();
+  });
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      modal.close();
+      form.reset();
+    }
+  });
+}
