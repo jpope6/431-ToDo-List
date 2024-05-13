@@ -115,7 +115,7 @@ function POST_ListItem(Handler $handler, $input) {
 
 function PUT_ListItem(Handler $handler, $itemId, $input) {
     $text = $input['text'] ?? null;
-    $checked = $input['checked'] ?? null;
+    $checked = isset($input['checked']) ? (int)$input['checked'] : null;  // Cast to int to handle it correctly in SQL
 
     if (!$itemId || ($text === null && $checked === null)) {
         $handler->response->HttpResponseCode(400, "Bad Request", "Missing ID or new data for list item update");
@@ -131,7 +131,7 @@ function PUT_ListItem(Handler $handler, $itemId, $input) {
     }
     if ($checked !== null) {
         $query .= "checked = ?, ";
-        $queryParams[] = $checked;
+        $queryParams[] = $checked;  // Ensure boolean is correctly handled as an integer
     }
     $query = rtrim($query, ", ");
     $query .= " WHERE idx = ?";
