@@ -332,7 +332,64 @@ document.addEventListener('DOMContentLoaded', function() {
       console.error('No list name provided');
     }
   });
+
+  const dateSortButton = document.getElementById('sort-list-date');
+  const nameSortButton = document.getElementById('sort-list-name');
+
+  dateSortButton.addEventListener('click', function() {
+    // Get the current sort type
+    const currentSortType = this.getAttribute('data-sort-type') || 'list-date-asc';
+  
+    // Determine the new sort type
+    const newSortType = currentSortType === 'list-date-asc' ? 'list-date-desc' : 'list-date-asc';
+  
+    // Update the sort type on the button
+    this.setAttribute('data-sort-type', newSortType);
+  
+    // Sort the data
+    sortData(newSortType);
+  });
+  
+  nameSortButton.addEventListener('click', function() {
+    // Get the current sort type
+    const currentSortType = this.getAttribute('data-sort-type') || 'list-name-asc';
+  
+    // Determine the new sort type
+    const newSortType = currentSortType === 'list-name-asc' ? 'list-name-desc' : 'list-name-asc';
+  
+    // Update the sort type on the button
+    this.setAttribute('data-sort-type', newSortType);
+  
+    // Sort the data
+    sortData(newSortType);
+  });
 });
+
+function sortData(sortType) {
+  // Fetch the data
+  fetch('api/example.php')
+    .then(response => response.json())
+    .then(data => {
+      if(Array.isArray(data)){
+        // Sort the data
+        if(sortType === 'list-date-asc') {
+          data.sort((a, b) => new Date(a.created) - new Date(b.created));
+        } else if(sortType === 'list-date-desc') {
+          data.sort((a, b) => new Date(b.created) - new Date(a.created));
+        } else if(sortType === 'list-name-asc') {
+          data.sort((a, b) => a.name.localeCompare(b.name));
+        } else if(sortType === 'list-name-desc') {
+          data.sort((a, b) => b.name.localeCompare(a.name));
+        }
+
+        // Update the UI with the sorted data
+        updateSidebar(data);
+      } else {
+        console.error('Data received is not an array:', data);
+      }
+    })
+    .catch(error => console.error('Error fetching lists:', error));
+}
 
 
 // Modals
