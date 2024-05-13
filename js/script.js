@@ -65,9 +65,7 @@ function handleClick(event) {
 }
 
 function fetchListItems(listId) {
-  console.log("Fetching items for list ID:", listId);
   fetch(`api/example.php?list_id=${listId}`, { method: 'GET'}).then(response => response.json()).then(items => {
-    console.log("Items fetched:", items);
     updateTaskListDisplay(items);
   }).catch(error => console.error('Error fetching list items:', error));
 }
@@ -82,20 +80,35 @@ function updateTaskListDisplay(items) {
 }
 
 function addListItem(text, listId) {
-  console.log("Adding new item:", text, "to list:", listId);
   fetch('api/example.php', {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
       },
-      body: JSON.stringify({ text: text, list_id: listId })  // Ensure keys match those expected by the server
+      body: JSON.stringify({ text: text, list_id: listId }) 
   })
   .then(response => response.json())
   .then(data => {
-      console.log('List item added:', data);
-      fetchListItems(listId);  // Refresh the list items
+      fetchListItems(listId);
   })
   .catch(error => console.error('Error adding list item:', error));
+}
+
+function updateListItemStatus(itemId, isChecked) {
+  fetch(`api/example.php?item_id=${itemId}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ checked: isChecked })
+  })
+  .then(response => response.json())
+  .then(result => {
+    if (!result.success) {
+      console.error('Failed to update list item status:', result.message);
+    }
+  })
+  .catch(error => console.error('Error updating list item status:', error));
 }
 
 function createTaskListItem(item) {
@@ -106,11 +119,15 @@ function createTaskListItem(item) {
   const input = document.createElement('input');
   input.type = 'checkbox';
   input.checked = item.checked;
-  input.id = item.idx; // Assuming 'idx' is the ID field for items
+  input.id = `item-${item.idx}`;
   input.name = item.idx;
+
+  input.addEventListener('change', () => {
+    updateListItemStatus(item.idx, input.checked);
+  });
   
   const label = document.createElement('label');
-  label.htmlFor = item.idx;
+  label.htmlFor = `item-${item.idx}`;
   label.textContent = item.text;
   
   const deleteButton = document.createElement('button');
@@ -132,7 +149,6 @@ function deleteTaskItem(itemId) {
       .then(response => response.json())
       .then(result => {
         if (result.success) {
-          console.log('Task item deleted:', result);
           const listItem = document.querySelector(`input[id='${itemId}']`).parentNode.parentNode;
           listItem.remove();
         } else {
@@ -143,9 +159,7 @@ function deleteTaskItem(itemId) {
   }
 }
 
-
 function deleteList(event, listId) {
-  // Prevent the default action if this is within a form or a link
   event.preventDefault();
 
   if (!listId) {
@@ -153,13 +167,11 @@ function deleteList(event, listId) {
     return;
   }
 
-  // Confirm before deleting
   if (confirm('Are you sure you want to delete this item?')) {
     fetch(`api/example.php?id=${listId}`, { method: 'DELETE' })
       .then(response => response.json())
       .then(data => {
         if (data.success) {
-          console.log('List deleted:', data);
           event.target.closest('.sidebar-list-item').remove();
           fetchAllLists();
         } else {
@@ -214,8 +226,7 @@ function addNewList(listName) {
   })
   .then(response => response.json())
   .then(data => {
-      console.log('List added:', data);
-      fetchAllLists();  // Refresh the list display
+      fetchAllLists();
   })
   .catch(error => console.error('Error adding list:', error));
 }
@@ -239,8 +250,6 @@ function updateListName(listId, newName) {
       console.error('Failed to update list:', data.message);
       alert('Failed to update list. Please try again');
       fetchAllLists();  // Refresh the list display
-    } else {
-      // do nothing; its successful
     }
   })
   .catch(error => {
@@ -285,10 +294,8 @@ document.getElementById('new-task-form').addEventListener('submit', function(eve
   event.preventDefault();
   const taskInput = document.getElementById('new-task-input');
   const taskText = taskInput.value.trim();
-  console.log("Task text:", taskText);
 
   const activeListId = document.querySelector('.sidebar-list-item.active-sidebar-item')?.getAttribute('data-id');
-  console.log("Active list ID:", activeListId);
   
   if (taskText && activeListId) {
     addListItem(taskText, activeListId);
@@ -317,7 +324,6 @@ document.addEventListener('DOMContentLoaded', function() {
     event.preventDefault();
     const listInput = document.getElementById('new-list-input');
     const listName = listInput.value.trim();
-    console.log("Trimmed Name:", listName);  // Debugging
 
     if (listName) {
       addNewList(listName);
