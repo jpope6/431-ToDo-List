@@ -359,6 +359,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Update the sort type on the button
     this.setAttribute('data-sort-type', newSortType);
 
+    const icon = this.querySelector('i');
+    if(newSortType === 'list-date-asc') {
+      icon.className = 'fa fa-sort-numeric-down';
+    }
+    else {
+      icon.className = 'fa fa-sort-numeric-up';
+    }
     // Sort the data
     sortData(newSortType);
   });
@@ -372,6 +379,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Update the sort type on the button
     this.setAttribute('data-sort-type', newSortType);
+
+    const icon = this.querySelector('i');
+    if(newSortType === 'list-name-asc') {
+      icon.className = 'fa fa-sort-alpha-down';
+    }
+    else {
+      icon.className = 'fa fa-sort-alpha-up';
+    }
 
     // Sort the data
     sortData(newSortType);
