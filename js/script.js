@@ -72,15 +72,11 @@ function fetchListItems(listId) {
 }
 
 function updateTaskListDisplay(items) {
-  items.sort((a, b) => {
-    // First, compare checked status
-    if (a.checked && !b.checked) {
-      return -1;
-    } else if (!a.checked && b.checked) {
-      return 1;
-    } else {
-      // If both have the same checked status, compare creation date
+  items.sort((a,b) => {
+    if (a.checked === b.checked) {
       return new Date(a.created) - new Date(b.created);
+    } else {
+      return (a.checked && !b.checked) ? -1 : 1;
     }
   });
 
@@ -289,6 +285,12 @@ function updateSidebar(lists) {
     const emptyMessage = document.createElement('p');
     emptyMessage.textContent = 'No lists available';
     sidebarLists.appendChild(emptyMessage);
+  } else {
+    // automatically select the first list item
+    const firstListItem = sidebarLists.querySelector('.sidebar-list-item');
+    if (firstListItem) { 
+      firstListItem.click();
+    }
   }
 }
 
